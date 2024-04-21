@@ -14,5 +14,10 @@ A basic ranking algorithm is provided to "score" results, which is factored usin
   Score = c - ((runtime in ms * t) + (memory usage *s)) * difficulty
 ```
 
+# Virtual Queue
+Contest users are placed into a virtual queue prior to the contest start time.  The queue provides metrics such as user position and time until dequeue using a virtualized thread monitor.  It's expected that users would be connected to the virtual queue via a websocket; the websocket would maintain a users place in the queue, as well as provide updated information about their estimated time until dequeue.
+
+The queue is built as a generic priority blocking queue, allowing for various rules to be provided governing dequeue logic.
+
 # Sample Environment
 Code may be executed
