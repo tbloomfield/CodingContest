@@ -19,5 +19,7 @@ Contest users are placed into a virtual queue prior to the contest start time.  
 
 The queue is built as a generic priority blocking queue, allowing for various rules to be provided governing dequeue logic.
 
+For more information, please see [Virtual Queue Readme](VirtualQueue/README.md)
+
 # Sample Environment
 Code may be executed
