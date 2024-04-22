@@ -7,7 +7,9 @@
      serverMessage("token=" + JSON.parse(dequeueMessage.body).jwtToken);
    } );
     $( "#disconnect" ).prop('disabled',false);
-    $( "#connect" ).prop('disabled',true);    
+    $( "#connect" ).prop('disabled',true);
+    $( "#enqueue" ).prop('disabled',false);    
+        
     serverMessage("Connected"); 
 }
 
@@ -26,9 +28,10 @@ function connect() {
 
 function disconnect() {
     stompClient.deactivate();
-    setConnected(false);
     serverMessage("Disconnected");
     $( "#disconnect" ).prop('disabled',true);
+    $( "#enqueue" ).prop('disabled',true);
+    $( "#connect" ).prop('disabled',false);
 }
 
 function enqueue() {
