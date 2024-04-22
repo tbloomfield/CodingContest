@@ -14,6 +14,13 @@ This code is meant to be Dockerized with a small total memory footprint and eith
  - deployed to a managed cluster and monitored via a container manager.
  - deployed programatically, executed, and spun down.
 
+## Building
+From the base directory of this project:
+```
+mvn install
+docker build --build-arg JAR_FILE=target/*.jar -t tbloomfield/java-testcontainer .
+```
+
 # Dependencies
 Running / starting this project requires:
 
