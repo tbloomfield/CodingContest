@@ -4,6 +4,10 @@ A Test Container for compiling, executing, and running tests on arbitrary Java c
 - Compiles arbitrary text into a valid Java class.
 - Virtually executes classes via reflection, invoking specified test methods and capturing results.
 
+# Future features
+- Loading test cases and configuration from a remote repository (S3)
+- Support for more dynamic test cases versus input / output cases.
+
 # Web Demo
 To start the Virtual Queue service, execute `mvn spring-boot:run`
 
