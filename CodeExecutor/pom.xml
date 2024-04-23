@@ -9,7 +9,7 @@
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>codingcontest-executor</artifactId>
+	<artifactId>codingcontest-solution</artifactId>
 
 	<properties>
 		<java.version>21</java.version>
@@ -37,18 +37,12 @@
 			<version>1.19.7</version>
 		</dependency>
 
-		<!-- for generating JWT auth tokens after dequeuing 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>-->
-
-		<!-- open api support 
+		<!-- open api support -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.5.0</version>
-		</dependency>-->
+		</dependency>
 
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>

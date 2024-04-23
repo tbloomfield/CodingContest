@@ -1,16 +1,18 @@
 package org.tbloomfield.codingconteset.container.java.server.metrics;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Builder;
 import lombok.Data;
 
 @Builder
 @Data
 public class JVMMetricDelta {
-	private JVMMetrics start;
-	private JVMMetrics end;
+    @JsonIgnore private JVMMetrics start;
+    @JsonIgnore private JVMMetrics end;
 	
 	private float cpuUsage;
-	private long elapsedCPU;
+	private long elapsedCPUInNs;
 	private long elapsedTime;
-	private long totalMemory;
+	private long usedMemoryInBytes;
 }

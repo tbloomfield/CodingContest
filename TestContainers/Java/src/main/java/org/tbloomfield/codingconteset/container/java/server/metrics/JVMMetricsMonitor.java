@@ -6,11 +6,11 @@ import java.lang.management.RuntimeMXBean;
 import com.sun.management.OperatingSystemMXBean;
 
 public class JVMMetricsMonitor {
-	private OperatingSystemMXBean operatingSystemMXBean = 
+	private static OperatingSystemMXBean operatingSystemMXBean = 
 	         (com.sun.management.OperatingSystemMXBean)ManagementFactory.getOperatingSystemMXBean();
-	private RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
+	private static RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
 	
-	public JVMMetrics capture() {
+	public static JVMMetrics capture() {
 	    int availableProcessors = operatingSystemMXBean.getAvailableProcessors();
 	    long uptime = runtimeMXBean.getUptime();
 	    long cpuTime = operatingSystemMXBean.getProcessCpuTime();
@@ -24,21 +24,21 @@ public class JVMMetricsMonitor {
 	    		.build();
 	}
 
-	public JVMMetricDelta endCapture(JVMMetrics previousMetrics) {
+	public static JVMMetricDelta endCapture(JVMMetrics previousMetrics) {
 		JVMMetrics endMetrics = capture();
 		
 		long elapsedCpu = endMetrics.getCpuTime() - previousMetrics.getCpuTime();
 	    long elapsedTime = endMetrics.getUptime() - previousMetrics.getUptime();
-	    long totalMemory = endMetrics.getFreeMemorySize() - previousMetrics.getFreeMemorySize();
+	    long totalMemory = previousMetrics.getFreeMemorySize() - endMetrics.getFreeMemorySize();
 	    float cpuUsage = Math.min(99F, elapsedCpu / (elapsedTime * 10000F * endMetrics.getAvailableProcessors()));
 	    
 	    return JVMMetricDelta.builder()
 	    		.cpuUsage(cpuUsage)
-	    		.elapsedCPU(elapsedCpu)
+	    		.elapsedCPUInNs(elapsedCpu)
 	    		.elapsedTime(elapsedTime)
 	    		.end(endMetrics)
 	    		.start(previousMetrics)
-	    		.totalMemory(totalMemory)
+	    		.usedMemoryInBytes(totalMemory)
 	    		.build();
 	}
 }

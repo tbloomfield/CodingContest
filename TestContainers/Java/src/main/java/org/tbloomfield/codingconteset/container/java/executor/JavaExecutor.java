@@ -2,6 +2,7 @@ package org.tbloomfield.codingconteset.container.java.executor;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ProcessBuilder.Redirect;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -19,14 +20,12 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
-import org.tbloomfield.codingconteset.container.java.server.TestResult;
+import org.tbloomfield.codingconteset.container.java.service.TestResult;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Component
 @Slf4j
 public class JavaExecutor {
 	/**
@@ -36,24 +35,33 @@ public class JavaExecutor {
 	 * @throws URISyntaxException if file to compile can't be loaded
 	 * @throws IOException        if compile process doesn't succeed.
 	 */
-	public void compile(URI resource) throws IOException, URISyntaxException {
+	public CompileResult compile(URI resource) throws IOException, URISyntaxException {
 		// write text to the specified filename
 		File javaFile = new File(resource);
 
 		ProcessBuilder pb = new ProcessBuilder("javac ", "-d", javaFile.getParent(), javaFile.getPath());
 		pb.redirectErrorStream(true);
-		pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+		pb.inheritIO();
+		pb.redirectError(Redirect.PIPE);
+		pb.redirectInput(Redirect.PIPE);
+		pb.redirectOutput(Redirect.PIPE);
+		
 		Process process = pb.start();
 		try {
+			//block until process returns, or throw exception to prevent endless block.
+			//TODO - make this configurable
+			process.waitFor(3, TimeUnit.SECONDS);
 			process.onExit().get();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
+		} catch (InterruptedException | ExecutionException e) {
 			log.error(e.getMessage(), e);
 		}
+		
+		int procVal = process.exitValue();
 		String result = new String(process.getInputStream().readAllBytes());
-		log.info(result);
+		return CompileResult.builder()
+				.statusCode(procVal)
+				.compilationOutput(result)
+				.build();
 	}
 
 	/**

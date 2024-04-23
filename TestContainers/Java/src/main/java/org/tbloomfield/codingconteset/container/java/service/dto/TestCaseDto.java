@@ -1,6 +1,7 @@
-package org.tbloomfield.codingconteset.container.java.server;
+package org.tbloomfield.codingconteset.container.java.service.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 public class TestCaseDto {
 	private String testCaseId;
 	private String[] arguments;

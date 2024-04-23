@@ -16,8 +16,8 @@ import org.springframework.util.ResourceUtils;
 import org.tbloomfield.codingconteset.container.java.executor.ExecutionContext;
 import org.tbloomfield.codingconteset.container.java.executor.JavaExecutor;
 import org.tbloomfield.codingconteset.container.java.executor.TestCase;
-import org.tbloomfield.codingconteset.container.java.server.TestCaseDto;
-import org.tbloomfield.codingconteset.container.java.server.TestResult;
+import org.tbloomfield.codingconteset.container.java.service.TestResult;
+import org.tbloomfield.codingconteset.container.java.service.dto.TestCaseDto;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,18 +34,6 @@ public class JavaExecutorTest_HelloWorld {
 	public void setup() {
 		executor = new JavaExecutor();
 	}
-	
-	/*@AfterAll
-	public static void teardown() {
-		//cleanup file created
-		File tempDir = FileUtils.getTempDirectory();
-		File compiledHelloWorld = new File(String.format("%s/%s", tempDir.getPath(), "HelloWorld.class" ));
-		try {
-			FileUtils.delete(compiledHelloWorld);
-		} catch (IOException e) {
-			log.error(e.getMessage(), e);
-		}
-	}*/
 	
 	@Test
 	public void testSubmissionCreation() throws IOException, URISyntaxException {		

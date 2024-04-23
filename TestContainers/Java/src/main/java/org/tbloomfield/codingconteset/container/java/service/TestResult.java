@@ -1,4 +1,4 @@
-package org.tbloomfield.codingconteset.container.java.server;
+package org.tbloomfield.codingconteset.container.java.service;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

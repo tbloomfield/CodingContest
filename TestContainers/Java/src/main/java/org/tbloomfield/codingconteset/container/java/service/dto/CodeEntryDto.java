@@ -1,13 +1,17 @@
-package org.tbloomfield.codingconteset.container.java.server;
+package org.tbloomfield.codingconteset.container.java.service.dto;
 
 import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
-public class CodeEntry {
+@Builder
+public class CodeEntryDto {
 	private List<TestCaseDto> testCases;
 	private String codeToExecute;
 	private String className;

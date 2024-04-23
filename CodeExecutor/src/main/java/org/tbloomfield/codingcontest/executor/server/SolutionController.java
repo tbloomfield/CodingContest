@@ -1,4 +1,4 @@
-package org.tbloomfield.codingconteset.container.java.server;
+package org.tbloomfield.codingcontest.executor.server;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,13 +20,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/codeRunner")
-public class TestRunnerController {
+@RequestMapping("/solution")
+public class SolutionController {	
 	
-	@Autowired private JavaExecutor executor;
-	
-	@PostMapping("/execute")
-	public List<TestResult> executeTest(@RequestBody CodeEntry entry) throws ClassNotFoundException {
+	@PostMapping("/submit")
+	public List<TestResult> submitCode(@RequestBody CodeEntry entry) throws ClassNotFoundException {
 		List<TestResult> testResults = new ArrayList<>();
 		
 		try {
