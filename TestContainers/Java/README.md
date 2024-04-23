@@ -19,27 +19,25 @@ curl -X 'POST' \
   'http://localhost:8082/codeRunner/execute' \
   -H 'accept: */*' \
   -H 'Content-Type: application/json' \
-  -d '{
-  "testCases": [
-    {
-      "testCaseId": "123"     
-    }
-  ],
-  "codeToExecute": "public class HelloWorld {public HelloWorld() {} public String outputHelloWorld() {return \"hello world\"; }}",
-  "className": "HelloWorld",
-  "methodNameToTest": "outputHelloWorld"
-}'
+  -d '{"testCases":[{"testCaseId":"123","arguments":["User123"]}],"codeToExecute":"public class PrintName {\r\n    public String printMyName(String name) {\r\n    \treturn String.format(\"Your name is %s\", name);\r\n    }\r\n}","className":"PrintName","methodNameToTest":"printMyName","argTypes":["java.lang.String"]}'
 ```
 
 Response:
 ```
-[
-  {
-    "testCaseId": "123",
-    "result": "hello world"
-  }
-]
-```
+{
+  "performanceInfo": {
+    "cpuUsage": 0,
+    "elapsedCPUInNs": 0,
+    "elapsedTime": 3,
+    "usedMemoryInBytes": -8192
+  },
+  "testResults": [
+    {
+      "testCaseId": "123",
+      "result": "Your name is User123"
+    }
+  ]
+}```
 
 # Deployment
 This code is meant to be Dockerized with a small total memory footprint and either:
