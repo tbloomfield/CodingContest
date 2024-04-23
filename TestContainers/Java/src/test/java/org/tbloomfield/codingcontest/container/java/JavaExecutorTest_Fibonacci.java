@@ -3,6 +3,7 @@ package org.tbloomfield.codingcontest.container.java;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -33,7 +34,7 @@ public class JavaExecutorTest_Fibonacci {
 		executor = new JavaExecutor();
 	}
 	
-	@AfterAll
+	/*@AfterAll
 	public static void teardown() {
 		//cleanup file created
 		File tempDir = FileUtils.getTempDirectory();
@@ -43,7 +44,7 @@ public class JavaExecutorTest_Fibonacci {
 		} catch (IOException e) {
 			log.error(e.getMessage(), e);
 		}
-	}
+	}*/
 	
 	@Test
 	public void testSubmissionCreation() throws IOException, URISyntaxException {		
@@ -52,15 +53,15 @@ public class JavaExecutorTest_Fibonacci {
 	}
 	
 	@Test 
-	public void testSubmissionExecution() {
-		File tempDir = FileUtils.getTempDirectory();
-        List<TestCase<?>> testCases = List.of(new TestCase<Integer>("123", 5));
+	public void testSubmissionExecution() throws FileNotFoundException {
+        List<TestCase> testCases = List.of(new TestCase("123", List.of(5)));
+        File file = ResourceUtils.getFile("classpath:submissions/Fibonacci.java");
         
         ExecutionContext context = ExecutionContext.builder()
         		.className("Fibonacci")
         		.entryMethodName("findFib")
         		.methodParameters(List.of(int.class))
-        		.filePath(tempDir)
+        		.filePath(file.getParentFile())
         		.ttlInSeconds(100)
         		.testCases(testCases)
         		.build();

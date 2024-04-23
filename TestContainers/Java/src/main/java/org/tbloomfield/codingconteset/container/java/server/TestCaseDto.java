@@ -4,10 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
+/**
+ * Holder for test data to run against a class. 
+ * @param <T>
+ */
 @NoArgsConstructor
-public class TestResult {
+@AllArgsConstructor
+@Data
+public class TestCaseDto {
 	private String testCaseId;
-	private Object result;
+	private String[] arguments;
 }

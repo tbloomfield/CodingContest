@@ -12,18 +12,21 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.io.FileUtils;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 import org.tbloomfield.codingconteset.container.java.server.TestResult;
 
 import lombok.extern.slf4j.Slf4j;
 
+@Component
 @Slf4j
 public class JavaExecutor {
 	/**
@@ -35,14 +38,20 @@ public class JavaExecutor {
 	 */
 	public void compile(URI resource) throws IOException, URISyntaxException {
 		// write text to the specified filename
-		File tempDir = FileUtils.getTempDirectory();
-		File tempResource = new File(resource);
-		String location = String.format("%s", tempResource.getPath());
+		File javaFile = new File(resource);
 
-		ProcessBuilder pb = new ProcessBuilder("javac ", "-d", tempDir.getPath(), location);
+		ProcessBuilder pb = new ProcessBuilder("javac ", "-d", javaFile.getParent(), javaFile.getPath());
 		pb.redirectErrorStream(true);
 		pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
 		Process process = pb.start();
+		try {
+			process.onExit().get();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			log.error(e.getMessage(), e);
+		}
 		String result = new String(process.getInputStream().readAllBytes());
 		log.info(result);
 	}
@@ -70,8 +79,7 @@ public class JavaExecutor {
 
 			Method entryMethod;
 			
-			
-			if(context.getMethodParameters().isEmpty()) { 
+			if(CollectionUtils.isEmpty(context.getMethodParameters())) { 
 				entryMethod = ReflectionUtils.findMethod(testClass, context.getEntryMethodName());
 			} else { 
 				Class[] argTypes = context.getMethodParameters().toArray(new Class[context.getMethodParameters().size()]);
@@ -86,13 +94,15 @@ public class JavaExecutor {
 			// execute method in a thread with a fixed duration of time
 			ExecutorService executor = Executors.newSingleThreadExecutor();
 			Future<List<TestResult>> future = executor.submit(() -> {
+				
 				List<TestResult> executionResults = new ArrayList<>(context.getTestCases().size());
-				for (TestCase<?> t : context.getTestCases()) {
-					Object result;
-					if(t.getArguments() instanceof Void || t.getArguments() ==null) { 
+				for (TestCase t : context.getTestCases()) {
+					Object result;					
+					if(CollectionUtils.isEmpty(t.getArguments())) { 
 						result = ReflectionUtils.invokeMethod(entryMethod, testObject);
-					} else { 
-						result = ReflectionUtils.invokeMethod(entryMethod, testObject, t.getArguments());
+					} else {
+						Object[] args = t.getArguments().toArray();  
+						result = ReflectionUtils.invokeMethod(entryMethod, testObject, args);
 					}
 					executionResults.add(new TestResult(t.getTestCaseId(), result));
 				}

@@ -3,6 +3,7 @@ package org.tbloomfield.codingcontest.container.java;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.springframework.util.ResourceUtils;
 import org.tbloomfield.codingconteset.container.java.executor.ExecutionContext;
 import org.tbloomfield.codingconteset.container.java.executor.JavaExecutor;
 import org.tbloomfield.codingconteset.container.java.executor.TestCase;
+import org.tbloomfield.codingconteset.container.java.server.TestCaseDto;
 import org.tbloomfield.codingconteset.container.java.server.TestResult;
 
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +35,7 @@ public class JavaExecutorTest_HelloWorld {
 		executor = new JavaExecutor();
 	}
 	
-	@AfterAll
+	/*@AfterAll
 	public static void teardown() {
 		//cleanup file created
 		File tempDir = FileUtils.getTempDirectory();
@@ -43,23 +45,23 @@ public class JavaExecutorTest_HelloWorld {
 		} catch (IOException e) {
 			log.error(e.getMessage(), e);
 		}
-	}
+	}*/
 	
 	@Test
 	public void testSubmissionCreation() throws IOException, URISyntaxException {		
-        File file = ResourceUtils.getFile("classpath:submissions/HelloWorld.java");		
+        File file = ResourceUtils.getFile("classpath:submissions/HelloWorld.java");                
 		executor.compile(file.toURI());
 	}
 	
 	@Test 
-	public void testSubmissionExecution() {
-		File tempDir = FileUtils.getTempDirectory();
-        List<TestCase<?>> testCases = List.of(new TestCase<Void>("123", null));
+	public void testSubmissionExecution() throws FileNotFoundException {
+		File file = ResourceUtils.getFile("classpath:submissions/HelloWorld.java");
+        List<TestCase> testCases = List.of(new TestCase("123", null));
         
         ExecutionContext context = ExecutionContext.builder()
         		.className("HelloWorld")
         		.entryMethodName("outputHelloWorld")
-        		.filePath(tempDir)
+        		.filePath(file.getParentFile())
         		.ttlInSeconds(100)
         		.testCases(testCases)
         		.build();

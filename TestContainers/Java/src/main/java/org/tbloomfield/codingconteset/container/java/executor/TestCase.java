@@ -1,17 +1,15 @@
 package org.tbloomfield.codingconteset.container.java.executor;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Holder for test data to run against a class. 
- * @param <T>
- */
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
-public class TestCase<T> {
+@AllArgsConstructor
+@NoArgsConstructor
+public class TestCase {
 	private String testCaseId;
-	private T arguments;
+	private List<?> arguments;
 }

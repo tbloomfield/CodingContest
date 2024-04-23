@@ -17,5 +17,5 @@ public class ExecutionContext {
 	private List<Class> methodParameters;
 	private File filePath;
 	private int ttlInSeconds;
-	private List<TestCase<?>> testCases;
+	private List<TestCase> testCases;
 }
