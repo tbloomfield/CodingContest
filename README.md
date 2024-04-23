@@ -4,6 +4,9 @@ Coding Contest is a suite of services which displays coding "challenges", accept
 Code is executed via a throwaway test runner container.  Upon code submission, a coordination service determines the correct test container, creates it, and passes the submission for execution.  This service monitors the test container,
 recording cpu and memory usage, as well as bounding test execution to a specified time limit.  Upon hitting a time or memory limit, the container is destroyed and results are recorded.
 
+For more information, please see [Java TestContainer Readme](TestContainers/Java/README.md)
+
+
 # Leaderboard
 A basic ranking algorithm is provided to "score" results, which is factored using configurable weights:
   ```
