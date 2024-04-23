@@ -13,6 +13,34 @@ To start the Virtual Queue service, execute `mvn spring-boot:run`
 
 After Startup, Swagger is available at: `http://localhost:8082/swagger-ui/index.html`
 
+Sample curl and response:
+```
+curl -X 'POST' \
+  'http://localhost:8082/codeRunner/execute' \
+  -H 'accept: */*' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "testCases": [
+    {
+      "testCaseId": "123"     
+    }
+  ],
+  "codeToExecute": "public class HelloWorld {public HelloWorld() {} public String outputHelloWorld() {return \"hello world\"; }}",
+  "className": "HelloWorld",
+  "methodNameToTest": "outputHelloWorld"
+}'
+```
+
+Response:
+```
+[
+  {
+    "testCaseId": "123",
+    "result": "hello world"
+  }
+]
+```
+
 # Deployment
 This code is meant to be Dockerized with a small total memory footprint and either:
  - deployed to a managed cluster and monitored via a container manager.
