@@ -1,4 +1,4 @@
-Coding Contest is a suite of services which displays coding "challenges", accepts arbitrary "contest" code answers for execution within an emphermeral environment, and ranks results.
+Coding Contest is a suite of services which displays coding "challenges", accepts arbitrary "contest" code answers for execution within an ephemeral environment, and ranks results.
 
 # Code Execution
 Code is executed via a throwaway test runner container.  Upon code submission, a coordination service determines the correct test container, creates it, and passes the submission for execution.  This service monitors the test container,
