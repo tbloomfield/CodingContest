@@ -7,17 +7,18 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.ResourceUtils;
-import org.tbloomfield.codingconteset.container.java.executor.ExecutionContext;
-import org.tbloomfield.codingconteset.container.java.executor.JavaExecutor;
-import org.tbloomfield.codingconteset.container.java.executor.TestCase;
-import org.tbloomfield.codingconteset.container.java.service.TestResult;
-import org.tbloomfield.codingconteset.container.java.service.dto.TestCaseDto;
+import org.tbloomfield.codingcontest.container.java.executor.ExecutionContext;
+import org.tbloomfield.codingcontest.container.java.executor.JavaExecutor;
+import org.tbloomfield.codingcontest.container.java.executor.TestCase;
+import org.tbloomfield.codingcontest.container.java.service.TestResult;
+import org.tbloomfield.codingcontest.container.java.service.dto.TestCaseDto;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,14 +45,13 @@ public class JavaExecutorTest_HelloWorld {
 	@Test 
 	public void testSubmissionExecution() throws FileNotFoundException {
 		File file = ResourceUtils.getFile("classpath:submissions/HelloWorld.java");
-        List<TestCase> testCases = List.of(new TestCase("123", null));
+        List<TestCase> testCases = List.of(new TestCase("123", null, "Hello, World!"));
         
         ExecutionContext context = ExecutionContext.builder()
-        		.className("HelloWorld")
         		.entryMethodName("outputHelloWorld")
-        		.filePath(file.getParentFile())
+        		.file(file)
         		.ttlInSeconds(100)
-        		.testCases(testCases)
+        		.testCases(Optional.of(testCases))
         		.build();
         		
 		List<TestResult> results = executor.executeCode(context);

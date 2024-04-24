@@ -1,6 +1,4 @@
-public class Fibonacci { 
-	public Fibonacci() {}
-	
+public class Fibonacci {
 	// Function to print N Fibonacci Number
     public int findFib(int position) {
         int num1 = 0, num2 = 1, sum = 1;

@@ -9,11 +9,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.tbloomfield.codingconteset.container.java.Main;
-import org.tbloomfield.codingconteset.container.java.executor.FileHelper;
-import org.tbloomfield.codingconteset.container.java.service.dto.CodeEntryDto;
-import org.tbloomfield.codingconteset.container.java.service.dto.ExecutionResultDto;
-import org.tbloomfield.codingconteset.container.java.service.dto.TestCaseDto;
+import org.tbloomfield.codingcontest.container.java.Main;
+import org.tbloomfield.codingcontest.container.java.executor.LocalFileHelper;
+import org.tbloomfield.codingcontest.container.java.service.dto.CodeEntryDto;
+import org.tbloomfield.codingcontest.container.java.service.dto.ExecutionResultDto;
+import org.tbloomfield.codingcontest.container.java.service.dto.TestCaseDto;
 
 import com.google.gson.Gson;
 
@@ -50,12 +50,12 @@ public class RunnerControllerTest {
 				.accept(MediaType.APPLICATION_JSON));		
 		response.andDo(print()).andExpect(status().isOk());
 		
-	    String body = response.andReturn().getResponse().getContentAsString();
-	    ExecutionResultDto result = gson.fromJson(body, ExecutionResultDto.class);
-	    assertNull(result.getErrors());
-	    assertNotNull(result.getPerformanceInfo());
-	    assertTrue(result.getPerformanceInfo().getElapsedTime() > 0);
-	    assertEquals("Your name is User123", result.getTestResults().get(0).getResult());
+    String body = response.andReturn().getResponse().getContentAsString();
+    ExecutionResultDto result = gson.fromJson(body, ExecutionResultDto.class);
+    assertNull(result.getErrors());
+    assertNotNull(result.getPerformanceInfo());
+    assertTrue(result.getPerformanceInfo().getElapsedTime() > 0);
+    assertEquals("Your name is User123", result.getTestResults().get(0).getResult());
 	}
 	
 	@Test
@@ -92,7 +92,7 @@ public class RunnerControllerTest {
 	    String body = response.andReturn().getResponse().getContentAsString();
 	    ExecutionResultDto result = gson.fromJson(body, ExecutionResultDto.class);
 	    assertNotNull(result.getErrors());
-	    assertTrue(result.getErrors().startsWith("PrintName_Invalid.java:4: error: cannot find symbol"));
+	    assertTrue(result.getErrors().startsWith("java.lang.IllegalArgumentException: no execution method found"));
 	}
 	
 	private CodeEntryDto testZeroArgCodeEntry() throws IOException {		
@@ -100,12 +100,13 @@ public class RunnerControllerTest {
 		TestCaseDto dto = TestCaseDto.builder()
 				.testCaseId("123")
 				.arguments(new String[] {"User123"} )
+				.expectedResult("Your name is User123")
 				.build();		
 		
 		CodeEntryDto entry = CodeEntryDto.builder()
 				.argTypes(new String[] {"java.lang.String"})
 				.className("PrintName")
-				.codeToExecute(FileHelper.findAndReturnFileContents("PrintName.java"))
+				.codeToExecute(TestHelper.findAndReturnSubmissionContents("PrintName", LocalFileHelper.JAVA_EXTENSION))
 				.methodNameToTest("printMyName")
 				.testCases(List.of(dto))
 				.build();
@@ -123,7 +124,7 @@ public class RunnerControllerTest {
 		CodeEntryDto entry = CodeEntryDto.builder()
 				.argTypes(new String[] {"java.lang.String"})
 				.className("PrintName_Invalid")
-				.codeToExecute(FileHelper.findAndReturnFileContents("PrintName_Invalid.java"))
+				.codeToExecute(TestHelper.findAndReturnSubmissionContents("PrintName_Invalid", LocalFileHelper.JAVA_EXTENSION))
 				.methodNameToTest("printMyName")
 				.testCases(List.of(dto))
 				.build();
