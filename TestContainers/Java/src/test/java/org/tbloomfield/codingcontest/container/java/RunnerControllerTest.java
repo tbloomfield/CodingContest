@@ -3,13 +3,11 @@ package org.tbloomfield.codingcontest.container.java;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.tbloomfield.codingcontest.container.java.Main;
 import org.tbloomfield.codingcontest.container.java.executor.LocalFileHelper;
 import org.tbloomfield.codingcontest.container.java.service.dto.CodeEntryDto;
 import org.tbloomfield.codingcontest.container.java.service.dto.ExecutionResultDto;
@@ -94,6 +92,26 @@ public class RunnerControllerTest {
 	    assertNotNull(result.getErrors());
 	    assertTrue(result.getErrors().startsWith("java.lang.IllegalArgumentException: no execution method found"));
 	}
+	
+	@Test
+  void executeCode_fileTests() throws Exception {
+    CodeEntryDto code = testZeroArgCodeEntry();
+    code.setTestCases(null);  //no test cases - the file on disk "PrintName_Tests" will be executed instead.
+    String jsonCode = gson.toJson(code);
+    
+    ResultActions response = mvc.perform(
+        post("/codeRunner/execute")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(jsonCode)
+        .accept(MediaType.APPLICATION_JSON));   
+    response.andDo(print()).andExpect(status().isOk());
+    
+    String body = response.andReturn().getResponse().getContentAsString();
+    ExecutionResultDto result = gson.fromJson(body, ExecutionResultDto.class);
+    assertNull(result.getErrors());
+    assertNotNull(result.getPerformanceInfo());
+    assertTrue(result.getPerformanceInfo().getElapsedTime() > 0);
+  }	
 	
 	private CodeEntryDto testZeroArgCodeEntry() throws IOException {		
 		//build sample tests to run

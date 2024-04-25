@@ -3,8 +3,6 @@ package org.tbloomfield.codingcontest.container.java.executor;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;

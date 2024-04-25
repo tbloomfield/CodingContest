@@ -1,8 +1,7 @@
-package org.tbloomfield.codingcontest.container.java.service.dto;
+package org.tbloomfield.codingcontest.container.java.bo;
 
 import java.util.List;
 
-import org.springframework.lang.Nullable;
 import org.tbloomfield.codingcontest.container.java.server.metrics.JVMMetricDelta;
 import org.tbloomfield.codingcontest.container.java.service.TestResult;
 
@@ -15,8 +14,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExecutionResultDto {
+public class ExecutionResult {
 	private JVMMetricDelta performanceInfo;
 	private List<TestResult> testResults;
-	@Nullable private String errors;
+	private String errors;
 }

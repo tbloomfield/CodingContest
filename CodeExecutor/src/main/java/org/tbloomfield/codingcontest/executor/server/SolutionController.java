@@ -21,84 +21,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/solution")
-public class SolutionController {	
+public class SolutionController {
+    
+  @GetMapping("/listQuestions")
+  public List<Question> list() { 
+      
+  }
 	
 	@PostMapping("/submit")
 	public List<TestResult> submitCode(@RequestBody CodeEntry entry) throws ClassNotFoundException {
 		List<TestResult> testResults = new ArrayList<>();
 		
 		try {
-			File tempFile = FileHelper.writeRandomTempFileWithContents(entry.getCodeToExecute(), entry.getClassName());
-			executor.compile(tempFile.toURI());
-			
-			//cast test cases from object to expected types
-			var paramTypes = getMethodParamTypes(entry.getArgTypes());
-			var testCases = caseTestTypes(paramTypes, entry.getTestCases());			
-			
-			 ExecutionContext context = ExecutionContext.builder()
-        		.className(entry.getClassName())
-        		.entryMethodName(entry.getMethodNameToTest())
-        		.methodParameters(getMethodParamTypes(entry.getArgTypes()))
-        		.filePath(tempFile.getParentFile())
-        		.ttlInSeconds(100)
-        		.testCases(testCases)
-        		.build();
-	 
-			 testResults = executor.executeCode(context);
 		} catch (IOException | URISyntaxException e) {
 			log.error(e.getMessage(), e);
 		}
 		return testResults;
-	}
-	
-	/**
-	 * Converts from method parameter string types to actual object classes.
-	 * 
-	 * @param entryTestCases
-	 * @return A list of class method parameter types, in order.
-	 * @throws ClassNotFoundException if String type was not a valid class type.
-	 */
-	private List<Class> getMethodParamTypes(String[] entryTestCases) throws ClassNotFoundException {
-		if(entryTestCases == null) { 
-			return List.of();
-		}
-		List<Class> paramTypes = new ArrayList<>(entryTestCases.length);
-		for(String paramType : entryTestCases) {
-			paramTypes.add(Class.forName(paramType));
-		}
-		return paramTypes;
-	}
-	
-	/**
-	 * Cast method parameter arguments from String type (as passed in the DTO) to their native types.
-	 * @return
-	 * @throws ClassNotFoundException 
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private List<TestCase> caseTestTypes(@NonNull List<Class> paramTypes, List<TestCaseDto> entryTestCases) throws ClassNotFoundException {
-		List<TestCase> filteredResults = new ArrayList<>();	
-		
-		for(TestCaseDto testCaseDto : entryTestCases) {
-			List<Object> castArguments = new ArrayList<>();
-			TestCase testCase = new TestCase();
-			testCase.setTestCaseId(testCaseDto.getTestCaseId());
-		
-			//convert parameter types.
-			for(int i = 0 ; testCaseDto.getArguments() != null && i < testCaseDto.getArguments().length; i++) {
-				Class paramType = paramTypes.get(i);
-				String argumentVal = testCaseDto.getArguments()[i];
-				if(paramType == int.class) { 
-					castArguments.add(Integer.valueOf(argumentVal));
-				} else if(paramType == String.class) {
-					castArguments.add(argumentVal);
-				} else if(paramType == Void.class) {
-					castArguments.add(null);
-				}
-			}
-			testCase.setArguments(castArguments);
-			filteredResults.add(testCase);
-		}
-		
-		return filteredResults;
 	}
 }

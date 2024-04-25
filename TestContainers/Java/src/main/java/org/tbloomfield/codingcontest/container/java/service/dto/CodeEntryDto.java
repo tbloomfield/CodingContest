@@ -12,9 +12,10 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class CodeEntryDto {
-	private List<TestCaseDto> testCases;
 	private String codeToExecute;
 	private String className;
 	private String methodNameToTest;
-	private String[] argTypes;
+	
+	 private List<TestCaseDto> testCases;
+   private String[] argTypes;
 }
