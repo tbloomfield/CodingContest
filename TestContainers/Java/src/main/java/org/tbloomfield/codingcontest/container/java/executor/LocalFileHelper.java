@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.util.ResourceUtils;
+import org.tbloomfield.codingcontest.container.bo.TestResult;
 import org.tbloomfield.codingcontest.container.java.executor.test.FileTestCase;
-import org.tbloomfield.codingcontest.container.java.service.TestResult;
 
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 
@@ -24,6 +24,14 @@ public class LocalFileHelper {
 		FileUtils.writeByteArrayToFile(tempFile, contents.getBytes());		
 		return tempFile;
 	}
+	
+	public static File createRandomTempFileWithContents(File directory, String contents) throws IOException {   
+	    //create a random nanoId backed directory to enforce uniqueness between runs    
+	    String randomFilename = NanoIdUtils.randomNanoId();
+	    File tempFile = new File(String.format("%s/%s.java", directory.getPath(), randomFilename));
+	    FileUtils.writeByteArrayToFile(tempFile, contents.getBytes());    
+	    return tempFile;
+	  }
 	
 	/**
 	 * Copies solution and test case files alongside a file submitted for execution.

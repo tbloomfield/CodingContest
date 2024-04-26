@@ -1,9 +1,7 @@
-package org.tbloomfield.codingcontest.container.java.bo;
+package org.tbloomfield.codingcontest.container.bo;
 
 import java.util.List;
 import java.util.Optional;
-
-import org.tbloomfield.codingcontest.container.java.executor.TestCase;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

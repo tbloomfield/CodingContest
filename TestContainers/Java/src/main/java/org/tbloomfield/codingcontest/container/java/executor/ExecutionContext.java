@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
+import org.tbloomfield.codingcontest.container.bo.TestCase;
+
 import lombok.Builder;
 import lombok.Data;
 

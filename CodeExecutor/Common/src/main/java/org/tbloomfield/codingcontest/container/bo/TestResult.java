@@ -1,4 +1,4 @@
-package org.tbloomfield.codingcontest.container.java.service;
+package org.tbloomfield.codingcontest.container.bo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

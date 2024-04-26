@@ -24,8 +24,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
+import org.tbloomfield.codingcontest.container.bo.TestCase;
+import org.tbloomfield.codingcontest.container.bo.TestResult;
 import org.tbloomfield.codingcontest.container.java.executor.test.TestCaseFailure;
-import org.tbloomfield.codingcontest.container.java.service.TestResult;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -94,14 +95,12 @@ public class JavaExecutor {
 
 			try {
 				testResults = runnerFuture.get(context.getTtlInSeconds(), TimeUnit.SECONDS);
-			} catch (TimeoutException e) {
+			} catch (TimeoutException t) {
 			    runnerFuture.cancel(true);
-			} catch (Exception e) {
-				log.error(e.getMessage());
 			} finally {
 				executor.shutdownNow();
 			}
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+		} catch (ExecutionException | InterruptedException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | MalformedURLException | ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}

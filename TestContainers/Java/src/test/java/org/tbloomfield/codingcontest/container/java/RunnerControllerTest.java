@@ -8,10 +8,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.tbloomfield.codingcontest.container.java.executor.LocalFileHelper;
-import org.tbloomfield.codingcontest.container.java.service.dto.CodeEntryDto;
+import org.tbloomfield.codingcontest.container.dto.CodeEntryWithTestDto;
+import org.tbloomfield.codingcontest.container.dto.CodeEntryWithTestFileDto;
 import org.tbloomfield.codingcontest.container.java.service.dto.ExecutionResultDto;
-import org.tbloomfield.codingcontest.container.java.service.dto.TestCaseDto;
 
 import com.google.gson.Gson;
 
@@ -23,8 +22,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -39,13 +36,13 @@ public class RunnerControllerTest {
 	
 	@Test
 	void executeCode_HappyPath() throws Exception {
-		CodeEntryDto code = testZeroArgCodeEntry();
-		String jsonCode = gson.toJson(code);		
-		ResultActions response = mvc.perform(
-				post("/codeRunner/execute")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(jsonCode)
-				.accept(MediaType.APPLICATION_JSON));		
+    CodeEntryWithTestDto code = TestCaseEntryBuilder.builder()
+      .withTestCase("123", new String[] {"User123"}, "Your name is User123")
+      .withExecutionMethod("printMyName", List.of("java.lang.String"))
+      .withCodeFromFile("PrintName", "PrintName")
+      .testedByCases();
+
+		ResultActions response = http("/codeRunner/execute/testCase", gson.toJson(code));
 		response.andDo(print()).andExpect(status().isOk());
 		
     String body = response.andReturn().getResponse().getContentAsString();
@@ -58,52 +55,47 @@ public class RunnerControllerTest {
 	
 	@Test
 	void executeCode_CompileExceptionPath() throws Exception {
-		CodeEntryDto code = invalidJavaCodeEntry();
-		String jsonCode = gson.toJson(code);
-		
-		ResultActions response = mvc.perform(
-				post("/codeRunner/execute")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(jsonCode)
-				.accept(MediaType.APPLICATION_JSON));		
+	  CodeEntryWithTestDto code = TestCaseEntryBuilder.builder()
+      .withTestCase("123", new String[] {"User123"}, "Your name is User123")
+      .withExecutionMethod("printMyName", List.of("java.lang.String"))
+      .withCodeFromFile("PrintName_Invalid", "PrintName_Invalid")
+      .testedByCases();
+	    
+	  ResultActions response = http("/codeRunner/execute/testCase", gson.toJson(code));		
 		response.andDo(print()).andExpect(status().isOk());
 		
-	    String body = response.andReturn().getResponse().getContentAsString();
-	    ExecutionResultDto result = gson.fromJson(body, ExecutionResultDto.class);
-	    assertNotNull(result.getErrors());
-	    assertTrue(result.getErrors().startsWith("PrintName_Invalid.java:4: error: cannot find symbol"));
+    String body = response.andReturn().getResponse().getContentAsString();
+    ExecutionResultDto result = gson.fromJson(body, ExecutionResultDto.class);
+    assertNotNull(result.getErrors());
+    assertTrue(result.getErrors().startsWith("PrintName_Invalid.java:4: error: cannot find symbol"));
 	}
 	
 	@Test
 	void executeCode_UnknownMethod() throws Exception {
-		CodeEntryDto code = testZeroArgCodeEntry();
-		code.setMethodNameToTest("nonExistantMethod");
-		String jsonCode = gson.toJson(code);
+    CodeEntryWithTestDto code = TestCaseEntryBuilder.builder()
+      .withTestCase("123", new String[] {"User123"}, "Your name is User123")
+      .withExecutionMethod("unknownMethod", List.of("java.lang.String"))
+      .withCodeFromFile("PrintName", "PrintName")
+      .testedByCases();
 		
-		ResultActions response = mvc.perform(
-				post("/codeRunner/execute")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(jsonCode)
-				.accept(MediaType.APPLICATION_JSON));		
+    ResultActions response = http("/codeRunner/execute/testCase", gson.toJson(code));
 		response.andDo(print()).andExpect(status().isOk());
 		
-	    String body = response.andReturn().getResponse().getContentAsString();
-	    ExecutionResultDto result = gson.fromJson(body, ExecutionResultDto.class);
-	    assertNotNull(result.getErrors());
-	    assertTrue(result.getErrors().startsWith("java.lang.IllegalArgumentException: no execution method found"));
+    String body = response.andReturn().getResponse().getContentAsString();
+    ExecutionResultDto result = gson.fromJson(body, ExecutionResultDto.class);
+    assertNotNull(result.getErrors());
+    assertTrue(result.getErrors().startsWith("java.lang.IllegalArgumentException: no execution method found"));
 	}
 	
+	//no test cases - the file on disk "PrintName_Tests" will be executed instead.
 	@Test
   void executeCode_fileTests() throws Exception {
-    CodeEntryDto code = testZeroArgCodeEntry();
-    code.setTestCases(null);  //no test cases - the file on disk "PrintName_Tests" will be executed instead.
-    String jsonCode = gson.toJson(code);
-    
-    ResultActions response = mvc.perform(
-        post("/codeRunner/execute")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(jsonCode)
-        .accept(MediaType.APPLICATION_JSON));   
+	  CodeEntryWithTestFileDto code = TestCaseEntryBuilder.builder()
+      .withCodeFromFile("PrintName", "PrintName")
+      .withTestCaseFromFile("PrintName")
+      .testedByFile();
+
+    ResultActions response = http("/codeRunner/execute/testFile", gson.toJson(code));
     response.andDo(print()).andExpect(status().isOk());
     
     String body = response.andReturn().getResponse().getContentAsString();
@@ -111,42 +103,14 @@ public class RunnerControllerTest {
     assertNull(result.getErrors());
     assertNotNull(result.getPerformanceInfo());
     assertTrue(result.getPerformanceInfo().getElapsedTime() > 0);
-  }	
+  }
 	
-	private CodeEntryDto testZeroArgCodeEntry() throws IOException {		
-		//build sample tests to run
-		TestCaseDto dto = TestCaseDto.builder()
-				.testCaseId("123")
-				.arguments(new String[] {"User123"} )
-				.expectedResult("Your name is User123")
-				.build();		
-		
-		CodeEntryDto entry = CodeEntryDto.builder()
-				.argTypes(new String[] {"java.lang.String"})
-				.className("PrintName")
-				.codeToExecute(TestHelper.findAndReturnSubmissionContents("PrintName", LocalFileHelper.JAVA_EXTENSION))
-				.methodNameToTest("printMyName")
-				.testCases(List.of(dto))
-				.build();
-		
-		return entry;
-	}
-	
-	private CodeEntryDto invalidJavaCodeEntry() throws IOException {		
-		//build sample tests to run
-		TestCaseDto dto = TestCaseDto.builder()
-				.testCaseId("123")
-				.arguments(new String[] {"User123"} )
-				.build();		
-		
-		CodeEntryDto entry = CodeEntryDto.builder()
-				.argTypes(new String[] {"java.lang.String"})
-				.className("PrintName_Invalid")
-				.codeToExecute(TestHelper.findAndReturnSubmissionContents("PrintName_Invalid", LocalFileHelper.JAVA_EXTENSION))
-				.methodNameToTest("printMyName")
-				.testCases(List.of(dto))
-				.build();
-		
-		return entry;
+	private ResultActions http(String endpoint, String content) throws Exception { 
+    ResultActions response = mvc.perform(
+            post(endpoint)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content)
+            .accept(MediaType.APPLICATION_JSON));
+    return response;
 	}
 }

@@ -18,6 +18,12 @@
 
 
 	<dependencies>
+    
+    <dependency>
+      <groupId>org.tbloomfield</groupId>
+      <artifactId>codingcontest-common</artifactId>
+      <version>0.1</version>
+    </dependency>
 
 		<!-- used to remove DRY monkey code -->
 		<dependency>
@@ -31,19 +37,12 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.16.1</version>
 		</dependency>
-
-		<!-- for validating auth tokens - TODO 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>-->
-
+		
 		<!-- open api support -->
 		<dependency>
 			<groupId>org.springdoc</groupId>

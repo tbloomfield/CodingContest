@@ -1,6 +1,6 @@
 package org.tbloomfield.codingcontest.container.java.executor.test;
 
-import org.tbloomfield.codingcontest.container.java.service.TestResult;
+import org.tbloomfield.codingcontest.container.bo.TestResult;
 
 import lombok.Getter;
 

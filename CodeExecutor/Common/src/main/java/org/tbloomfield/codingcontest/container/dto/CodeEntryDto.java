@@ -1,6 +1,4 @@
-package org.tbloomfield.codingcontest.container.java.service.dto;
-
-import java.util.List;
+package org.tbloomfield.codingcontest.container.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,8 +12,5 @@ import lombok.NoArgsConstructor;
 public class CodeEntryDto {
 	private String codeToExecute;
 	private String className;
-	private String methodNameToTest;
-	
-	 private List<TestCaseDto> testCases;
-   private String[] argTypes;
+	private CodeEntryMethodDto method;
 }

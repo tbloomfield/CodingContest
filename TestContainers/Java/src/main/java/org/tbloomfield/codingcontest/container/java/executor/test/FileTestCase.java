@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.tbloomfield.codingcontest.container.java.service.TestResult;
+import org.tbloomfield.codingcontest.container.bo.TestResult;
 
 /**
  * Functionality which all file-based test cases extend; it's expected that each case

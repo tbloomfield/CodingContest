@@ -1,29 +1,15 @@
-package org.tbloomfield.codingcontest.container.java.service;
+package org.tbloomfield.codingcontest.container.dto;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.tbloomfield.codingcontest.container.java.bo.CodeEntry;
-import org.tbloomfield.codingcontest.container.java.bo.ExecutionResult;
-import org.tbloomfield.codingcontest.container.java.executor.TestCase;
-import org.tbloomfield.codingcontest.container.java.service.dto.CodeEntryDto;
-import org.tbloomfield.codingcontest.container.java.service.dto.ExecutionResultDto;
-import org.tbloomfield.codingcontest.container.java.service.dto.TestCaseDto;
+import org.tbloomfield.codingcontest.container.bo.CodeEntry;
+import org.tbloomfield.codingcontest.container.bo.TestCase;
 
 import lombok.NonNull;
 
 public class DtoHelper {
-    /**
-     * Removes directory information from the error for security purposes:
-     * 
-     * @param originalError
-     * @return
-     */
-    public static String scrubError(String className, String originalError) {
-      return originalError.substring(
-          originalError.indexOf(className + ".java:"));
-    }
     
     /**
      * Converts from method parameter string types to class types; required for proper reflection of 
@@ -33,11 +19,11 @@ public class DtoHelper {
      * @return A list of class method parameter types, in order.
      * @throws ClassNotFoundException if String type was not a valid class type.
      */
-    public static List<Class> toClassTypes(String[] entryTestCases) throws ClassNotFoundException {
+    public static List<Class> toClassTypes(List<String> entryTestCases) throws ClassNotFoundException {
       if(entryTestCases == null) { 
         return List.of();
       }
-      List<Class> paramTypes = new ArrayList<>(entryTestCases.length);
+      List<Class> paramTypes = new ArrayList<>(entryTestCases.size());
       for(String paramType : entryTestCases) {
         paramTypes.add(Class.forName(paramType));
       }
@@ -86,28 +72,30 @@ public class DtoHelper {
      * @return
      * @throws ClassNotFoundException 
      */
-    public static CodeEntry toCodeEntry(@NonNull CodeEntryDto codeEntryDto) throws ClassNotFoundException{
-      var paramTypes = toClassTypes(codeEntryDto.getArgTypes());
+    public static CodeEntry toCodeEntry(@NonNull CodeEntryWithTestDto codeEntryDto) throws ClassNotFoundException{
+      CodeEntryMethodDto method = codeEntryDto.getCodeEntry().getMethod();
+      var paramTypes = toClassTypes(method.getMethodArgTypes());
       var testCases = toTestCase(paramTypes, codeEntryDto.getTestCases());        
 
-      return CodeEntry.builder() 
-              .argTypes(!paramTypes.isEmpty() ? Optional.of(paramTypes) : Optional.empty())
-              .className(codeEntryDto.getClassName())
+      return CodeEntry.builder()
+              .className(codeEntryDto.getCodeEntry().getClassName())
+              .codeToExecute(codeEntryDto.getCodeEntry().getCodeToExecute())
               .testCases(!testCases.isEmpty() ? Optional.of(testCases) : Optional.empty())
-              .codeToExecute(codeEntryDto.getCodeToExecute())
-              .methodNameToTest(codeEntryDto.getMethodNameToTest())
+              .methodNameToTest(method.getMethodNameToTest())
+              .argTypes(!paramTypes.isEmpty() ? Optional.of(paramTypes) : Optional.empty()) //support for zero-arg methods              
               .build();
     }
     
     /**
-     * Converts from internal ExecutionResult to external DTO
-     *  
+     * Converts to internal DTO for code entries.
+     * 
+     * @return
+     * @throws ClassNotFoundException 
      */
-    public static ExecutionResultDto fromExecutionResult(@NonNull ExecutionResult executionResult) {
-      return ExecutionResultDto.builder()
-              .performanceInfo(executionResult.getPerformanceInfo())
-              .testResults(executionResult.getTestResults())
-              .errors(executionResult.getErrors())
+    public static CodeEntry toCodeEntry(@NonNull CodeEntryWithTestFileDto codeEntryDto) throws ClassNotFoundException{
+      return CodeEntry.builder()
+              .className(codeEntryDto.getCodeEntry().getClassName())
+              .codeToExecute(codeEntryDto.getCodeEntry().getCodeToExecute())
               .build();
     }
 }

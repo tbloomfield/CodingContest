@@ -1,4 +1,4 @@
-package org.tbloomfield.codingcontest.container.java.executor;
+package org.tbloomfield.codingcontest.container.bo;
 
 import java.util.List;
 

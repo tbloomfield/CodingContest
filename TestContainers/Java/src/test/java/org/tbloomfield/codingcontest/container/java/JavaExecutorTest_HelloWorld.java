@@ -9,16 +9,13 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.ResourceUtils;
+import org.tbloomfield.codingcontest.container.bo.TestCase;
+import org.tbloomfield.codingcontest.container.bo.TestResult;
 import org.tbloomfield.codingcontest.container.java.executor.ExecutionContext;
 import org.tbloomfield.codingcontest.container.java.executor.JavaExecutor;
-import org.tbloomfield.codingcontest.container.java.executor.TestCase;
-import org.tbloomfield.codingcontest.container.java.service.TestResult;
-import org.tbloomfield.codingcontest.container.java.service.dto.TestCaseDto;
 
 import lombok.extern.slf4j.Slf4j;
 
