@@ -20,13 +20,14 @@ import org.tbloomfield.codingcontest.container.java.server.metrics.JVMMetrics;
 import org.tbloomfield.codingcontest.container.java.server.metrics.JVMMetricsMonitor;
 import org.tbloomfield.codingcontest.container.java.service.dto.DtoHelper;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
 public class ExecutorBoImpl implements ExecutorBo {
     
-    @Autowired private JavaExecutor executor;
+    @Autowired @Setter private JavaExecutor executor;
     private final int MAX_RUNTIME_TTL_SECONDS = 5; 
 
     @Override
@@ -110,7 +111,7 @@ public class ExecutorBoImpl implements ExecutorBo {
     
     private File createTestFile(File testFileLocation, String contents) { 
         try {
-          return LocalFileHelper.createRandomTempFileWithContents(testFileLocation, contents);
+          return LocalFileHelper.createTempFileFromContents(testFileLocation, contents);
         } catch (IOException e) {
           log.error(e.getMessage(), e);
           throw new RuntimeException(e);

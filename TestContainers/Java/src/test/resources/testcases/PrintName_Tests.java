@@ -1,5 +1,5 @@
 import org.tbloomfield.codingcontest.container.java.executor.test.FileTestCase;
-import org.tbloomfield.codingcontest.container.java.service.TestResult;
+import org.tbloomfield.codingcontest.container.bo.TestResult;
 
 public class PrintName_Tests extends FileTestCase{
     PrintName testClass;

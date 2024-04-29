@@ -12,9 +12,12 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.ResourceUtils;
+import org.tbloomfield.codingcontest.container.bo.CodeEntry;
 import org.tbloomfield.codingcontest.container.bo.TestCase;
 import org.tbloomfield.codingcontest.container.bo.TestResult;
-import org.tbloomfield.codingcontest.container.java.executor.CompileResult;
+import org.tbloomfield.codingcontest.container.java.bo.ExecutionResult;
+import org.tbloomfield.codingcontest.container.java.bo.ExecutorBo;
+import org.tbloomfield.codingcontest.container.java.bo.ExecutorBoImpl;
 import org.tbloomfield.codingcontest.container.java.executor.ExecutionContext;
 import org.tbloomfield.codingcontest.container.java.executor.JavaExecutor;
 import org.tbloomfield.codingcontest.container.java.executor.LocalFileHelper;
@@ -28,11 +31,14 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class JavaExecutorTest_Fibonacci {
+  private ExecutorBoImpl executorBo;
 	private JavaExecutor executor;
 	
 	@BeforeEach
 	public void setup() {
 		executor = new JavaExecutor();
+		executorBo = new ExecutorBoImpl();
+		executorBo.setExecutor(executor);
 	}
 	
 	@Test
@@ -60,27 +66,16 @@ public class JavaExecutorTest_Fibonacci {
 	}
 	
 	@Test
-	public void testSubmissionExecution_File() throws IOException, URISyntaxException {
+	public void testSubmissionExecution_File() throws IOException, URISyntaxException {	    
+	  
+	    
     String contents = TestHelper.findAndReturnSubmissionContents("Fibonacci", LocalFileHelper.JAVA_EXTENSION);
-    File writtenFile = LocalFileHelper.writeRandomTempFileWithContents(contents, "Fibonacci");
-    List<File> testFiles = LocalFileHelper.copySupportingTestFiles(writtenFile, LocalFileHelper.JAVA_EXTENSION);
-    
-    //execute testcase
-    for(File f : testFiles) {
-      //compile test file and their dependencies.
-      CompileResult result = executor.compile(f.toURI());
-      log.info(result.getCompilationOutput());
-      assertEquals(0, result.getStatusCode());
-        
-      ExecutionContext context = ExecutionContext.builder()        
-              .entryMethodName("executeTest")
-              .file(f)
-              .ttlInSeconds(100)
-              .build();
-      
-      List<TestResult> testResult = executor.executeCode(context);
-      log.info(testResult.get(0).toString());
-      
-    }
+    CodeEntry mock = CodeEntry.builder()
+            .codeToExecute(contents)
+            .className("Fibonacci")
+            .build();
+    String testContents = TestHelper.findAndReturnTestContent("Fibonacci", LocalFileHelper.JAVA_EXTENSION);
+    ExecutionResult results = executorBo.executeFileBasedTest(mock, List.of(testContents));
+    log.info(results.getTestResults().get(0).toString());    
 	}
 }
